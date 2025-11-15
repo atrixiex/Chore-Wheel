@@ -1,0 +1,6 @@
+@ChoreWheel.Backend_HostAddress = http://localhost:5209
+
+GET {{ChoreWheel.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
