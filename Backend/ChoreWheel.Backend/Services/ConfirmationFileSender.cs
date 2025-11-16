@@ -7,7 +7,7 @@ namespace ChoreWheel.Backend.Services;
 public class ConfirmationFileSender(ILogger<ConfirmationFileSender> logger) : IEmailSender
 {
     private readonly ILogger _logger = logger;
-    private string _basePath = "C:\\Users\\boboe\\source\\repos\\Chore-Wheel\\Backend\\ChoreWheel.Backend\\ConfirmationEmails\\";
+    private readonly string _basePath = "C:\\Users\\boboe\\source\\repos\\Chore-Wheel\\Backend\\ChoreWheel.Backend\\ConfirmationEmails\\";
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
