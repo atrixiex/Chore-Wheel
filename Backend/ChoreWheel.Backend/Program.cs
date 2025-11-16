@@ -1,7 +1,9 @@
 using ChoreWheel.Backend.Data;
 using ChoreWheel.Backend.Data.Database;
 using ChoreWheel.Backend.Data.Identity;
+using ChoreWheel.Backend.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Scalar.AspNetCore;
@@ -11,9 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Auth
 builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
 {
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
     options.User.RequireUniqueEmail = true;
     options.SignIn.RequireConfirmedPhoneNumber = false;
-    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedEmail = true;
     options.SignIn.RequireConfirmedAccount = false;
 })
     .AddRoles<IdentityRole>()
@@ -29,6 +34,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextProvider, UserContextProvider>();
 builder.Services.AddControllers();
+builder.Services.AddTransient<IEmailSender, ConfirmationFileSender>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

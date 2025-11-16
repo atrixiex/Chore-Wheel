@@ -18,7 +18,7 @@ namespace ChoreWheel.Backend.Data.Database
         {
             base.OnModelCreating(builder);
             builder.Entity<Chore>()
-                .HasQueryFilter(chore => chore.OwnedBy.Id == _userProvider.UserId || _userProvider.IsAdmin || chore.SharedWith.Any(sharee => sharee.Id == _userProvider.UserId))
+                .HasQueryFilter(chore => chore.OwnedBy.Id == _userProvider.UserId || _userProvider.IsAdmin || chore.SharedWith.Any(sharee => sharee.Id == _userProvider.UserId));
             builder.Entity<Chore>()
                 .Navigation(chore => chore.OwnedBy).AutoInclude();
             builder.Entity<Chore>()

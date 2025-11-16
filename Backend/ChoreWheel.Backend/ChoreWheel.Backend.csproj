@@ -19,4 +19,8 @@
     <PackageReference Include="Scalar.AspNetCore.Microsoft" Version="2.10.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ConfirmationEmails\" />
+  </ItemGroup>
+
 </Project>
