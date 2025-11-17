@@ -15,10 +15,22 @@ namespace ChoreWheel.Backend.Controllers;
 public class UserManagementController(UserManagementService userManagementService) : ControllerBase
 {
     private readonly UserManagementService _userManagementService = userManagementService;
-    // GET: api/Chores
+
     [HttpGet("Users")]
-    public async Task<ActionResult<List<ChoreDifficultyDto>>> GetUsers()
+    public async Task<ActionResult<List<ChoreDifficultyDto>>> GetUsers([FromQuery]bool includeActivated = false)
     {
-        return Ok(await _userManagementService.GetUsers());
+        return Ok(await _userManagementService.GetUsers(includeActivated));
+    }
+
+    [HttpGet("Users/{id}/activate")]
+    public async Task<ActionResult> ActivateUser(string id)
+    {
+        return await _userManagementService.ActivateUser(id);
+    }
+
+    [HttpGet("Users/{id}/disable")]
+    public async Task<ActionResult> DisableUser(string id)
+    {
+        return await _userManagementService.DisableUser(id);
     }
 }
