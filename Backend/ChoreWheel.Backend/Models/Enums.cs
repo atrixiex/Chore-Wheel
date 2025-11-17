@@ -2,8 +2,8 @@
 
 public enum ChoreDifficulty
 {
-    None = 1,
-    Tiny,
+    Tiny = 1,
+    Small,
     Meh,
     Sigh,
     Herculean

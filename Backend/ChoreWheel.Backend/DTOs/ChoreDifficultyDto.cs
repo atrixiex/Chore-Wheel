@@ -2,8 +2,8 @@
 
 namespace ChoreWheel.Backend.DTOs;
 
-public class ChoreDifficultyDto(ChoreDifficulty choreDifficulty)
+public class ChoreDifficultyDto
 {
-    public ChoreDifficulty Value { get; } = choreDifficulty;
-    public string Name { get; } = choreDifficulty.ToString();
+    public required ChoreDifficulty Value { get; set; }
+    public required string Name { get; set; }
 }

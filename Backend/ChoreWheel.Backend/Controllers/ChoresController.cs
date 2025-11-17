@@ -1,5 +1,7 @@
-using ChoreWheel.Backend.Data.Database;
+using ChoreWheel.Backend.DTOs;
+using ChoreWheel.Backend.Mappers;
 using ChoreWheel.Backend.Models;
+using ChoreWheel.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,91 +9,57 @@ namespace ChoreWheel.Backend.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ChoresController(ApplicationDbContext context) : ControllerBase
+public class ChoresController(ChoreService choreService) : ControllerBase
 {
-    private readonly ApplicationDbContext _context = context;
+    private readonly ChoreService _choreService = choreService;
+
+    [HttpGet("Difficulties")]
+    public async Task<ActionResult<List<ChoreDifficultyDto>>> GetDifficulties()
+    {
+        return Ok(Enum.GetValues<ChoreDifficulty>().Select<ChoreDifficulty, ChoreDifficultyDto>(choreDifficulty => choreDifficulty.ToDto()));
+    }
 
     // GET: api/Chores
     [HttpGet]
-    public async Task<ActionResult<List<Chore>>> GetChore()
+    public async Task<ActionResult<List<ChoreDto>>> GetChores()
     {
-        return await _context.Chore.ToListAsync();
+        return Ok(await _choreService.GetChoresAsync());
     }
 
     // GET: api/Chores/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Chore>> GetChore(int id)
+    public async Task<ActionResult<ChoreDto>> GetChore(int id)
     {
-        var chore = await _context.Chore.FindAsync(id);
+        var chore = await _choreService.GetChoreAsync(id);
 
         if (chore == null)
         {
             return NotFound();
         }
 
-        return chore;
+        return Ok(chore);
     }
 
-    // PUT: api/Chores/5
+    // PATCH: api/Chores/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutChore(int id, Chore chore)
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<ChoreDto>> PatchChore(int id, ChorePatchDto chorePatchDto)
     {
-        if (id != chore.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(chore).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!ChoreExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
+        return await _choreService.UpdateChoreAsync(id, chorePatchDto);
     }
 
     // POST: api/Chores
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Chore>> PostChore(Chore chore)
+    public async Task<ActionResult<ChoreDto>> PostChore(ChorePostDto chorePostDto)
     {
-        _context.Chore.Add(chore);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetChore", new { id = chore.Id }, chore);
+        return await _choreService.CreateChoreAsync(chorePostDto);
     }
 
     // DELETE: api/Chores/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteChore(int id)
     {
-        var chore = await _context.Chore.FindAsync(id);
-        if (chore == null)
-        {
-            return NotFound();
-        }
-
-        _context.Chore.Remove(chore);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool ChoreExists(int id)
-    {
-        return _context.Chore.Any(e => e.Id == id);
+        return await _choreService.DeleteChoreAsync(id);
     }
 }

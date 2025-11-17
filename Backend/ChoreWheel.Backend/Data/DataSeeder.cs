@@ -6,31 +6,36 @@ namespace ChoreWheel.Backend.Data;
 
 public class DataSeeder
 {
-    public static async Task SeedDatabase(IServiceProvider serviceProvider)
+    public static async Task SeedDatabase(IServiceProvider serviceProvider, bool IsDevelopment = false)
     {
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
         var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
+        // Create admin user
         await SeedUserRolesAsync(roleManager);
+        // Create admin user
         await SeedUserAsync(userManager, ChoreWheelConstants.adminUser, ChoreWheelConstants.AdminPassword, ChoreWheelConstants.AdminRoleName);
-        await SeedUserAsync(userManager, ChoreWheelConstants.demoUser, ChoreWheelConstants.DemoPassword, ChoreWheelConstants.UserRoleName);
-        await SeedUserAsync(userManager, new IdentityUser {
-            UserName = "demo2",
-            Email = "demo2@test.com",
-            EmailConfirmed = true
-        }, ChoreWheelConstants.DemoPassword, ChoreWheelConstants.UserRoleName);
-
-        foreach (var user in userManager.Users)
+        if (IsDevelopment)
         {
-            await SeedChoresAsync(dbContext, user);
-        }
+            await SeedUserAsync(userManager, ChoreWheelConstants.demoUser, ChoreWheelConstants.DemoPassword, ChoreWheelConstants.UserRoleName);
+            await SeedUserAsync(userManager, new IdentityUser
+            {
+                UserName = "demo2",
+                Email = "demo2@test.com",
+                EmailConfirmed = true
+            }, ChoreWheelConstants.DemoPassword, ChoreWheelConstants.UserRoleName);
 
-        // Shared
-        var user1 = await userManager.FindByNameAsync("demo");
-        var user2 = await userManager.FindByNameAsync("demo2");
-        dbContext.Chore.Add(new Chore { Title = $"Shared - Chore 1", OwnedBy = user1, SharedWith = [user2] });
-        await dbContext.SaveChangesAsync();
+            foreach (var user in userManager.Users)
+            {
+                await SeedChoresAsync(dbContext, user);
+            }
+            // Shared
+            var user1 = await userManager.FindByNameAsync("demo");
+            var user2 = await userManager.FindByNameAsync("demo2");
+            dbContext.Chore.Add(new Chore { Title = $"Shared - Chore 1", OwnedBy = user1, SharedWith = [user2] });
+            await dbContext.SaveChangesAsync();
+        }
     }
 
     private static async Task SeedUserRolesAsync(RoleManager<IdentityRole> roleManager)
@@ -55,6 +60,9 @@ public class DataSeeder
             {
                 // Assign the role to the user
                 await userManager.AddToRoleAsync(user, role);
+                // Set email as confirmed since it is not be default
+                user.EmailConfirmed = true;
+                await userManager.UpdateAsync(user);
             }
             else
             {

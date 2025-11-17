@@ -16,6 +16,7 @@ public class ApplicationUserManager(
 {
     public override async Task<IdentityResult> CreateAsync(IdentityUser user, string password)
     {
+        user.EmailConfirmed = false;
         var result = await base.CreateAsync(user, password);
         if (result.Succeeded)
         {

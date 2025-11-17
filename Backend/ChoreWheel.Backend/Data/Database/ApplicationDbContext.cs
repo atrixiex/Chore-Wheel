@@ -3,7 +3,9 @@ using ChoreWheel.Backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
+using System.Linq;
 using System.Threading;
 
 namespace ChoreWheel.Backend.Data.Database;
@@ -23,6 +25,43 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .Navigation(chore => chore.OwnedBy).AutoInclude();
         builder.Entity<Chore>()
             .Navigation(chore => chore.SharedWith).AutoInclude();
+    }
 
+    public override int SaveChanges()
+    {
+        SetDateTimeColumns();
+
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        SetDateTimeColumns();
+
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void SetDateTimeColumns()
+    {
+        var entitiesCreated = ChangeTracker.Entries()
+            .Where(e => e.Entity is AuditedEntity && e.State == EntityState.Added)
+            .Select(x => (AuditedEntity)x.Entity);
+
+        var entitiesModified = ChangeTracker
+            .Entries()
+            .Where(e => e.Entity is AuditedEntity
+                        && e.State == EntityState.Modified)
+            .Select(x => (AuditedEntity)x.Entity);
+
+        foreach (var entity in entitiesCreated)
+        {
+            entity.CreationDateTime = DateTimeOffset.Now;
+            entity.LastModificationDateTime = entity.CreationDateTime;
+        }
+
+        foreach (var entity in entitiesModified)
+        {
+            entity.LastModificationDateTime = DateTimeOffset.Now;
+        }
     }
 }
