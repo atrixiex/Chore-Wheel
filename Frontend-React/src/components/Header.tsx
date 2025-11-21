@@ -11,6 +11,7 @@ export default function Header() {
       <Link to="/profile">
         <img src={Cog} alt="Cog" />
       </Link>
-    </nav>
+      <Link to="/test">Test</Link>
+    </nav >
   )
 }

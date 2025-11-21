@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../auth'
-
+import StyledInput from './StyledInput'
 
 export function LoginForm() {
   const auth = useAuth()
@@ -37,33 +37,23 @@ export function LoginForm() {
           </div>
         )}
 
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium  mb-1">
-            Username
-          </label>
-          <input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-950"
-            required
-          />
-        </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium mb-1">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-950"
-            required
-          />
-        </div>
+        <StyledInput
+          id="username"
+          label='Username'
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+
+        <StyledInput
+          id="password"
+          label='Password'
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required />
 
         <button
           type="submit"

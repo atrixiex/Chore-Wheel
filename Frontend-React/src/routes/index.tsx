@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { LoginForm } from '../components/LoginForm'
-import Index from '../Index'
+import Index from '../pages/Home'
 
 export const Route = createFileRoute('/')({
   component: HomeComponent,
@@ -14,4 +14,3 @@ function HomeComponent() {
   return <Index />
 
 }
-
