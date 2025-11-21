@@ -1,11 +1,10 @@
-﻿namespace ChoreWheel.Backend.Models
+﻿namespace ChoreWheel.Backend.Models;
+
+public enum ChoreDifficulty
 {
-    public enum ChoreDifficulty
-    {
-        None = 1,
-        Tiny,
-        Meh,
-        Sigh,
-        Herculean
-    }
+    None = 1,
+    Tiny,
+    Meh,
+    Sigh,
+    Herculean
 }
