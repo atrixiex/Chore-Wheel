@@ -1,21 +1,31 @@
-import Header from "./components/Header"
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
+import { AuthProvider, useAuth } from './auth'
 
-function App() {
+export const router = createRouter({
+  routeTree,
+  context: {
+    auth: undefined!,
+  },
+})
 
-  return (
-    <>
-      <div className="bg-slate-950 w-md h-screen text-purple-200 font-container">
-        <Header />
-
-
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt praesentium soluta itaque repellendus odio, harum dolore dolor similique! Beatae quis laudantium facilis doloribus vero harum error vitae aliquam, sapiente eligendi!</p>
-      </div>
-
-
-
-
-    </>
-  )
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
 }
 
-export default App
+function InnerApp() {
+  const auth = useAuth()
+  return <RouterProvider router={router} context={{ auth }} />
+}
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AuthProvider>
+      <InnerApp />
+    </AuthProvider>
+  </StrictMode>
+)

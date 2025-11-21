@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Frontend",
+      "type": "shell",
+      "command": "cd Frontend-React; npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend",
+      "type": "shell",
+      "command": "cd Backend; cd Chorewheel.Backend; dotnet run --launch-profile http",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Development",
+      "dependsOrder": "parallel",
+      "dependsOn": ["Frontend", "Backend"],
+      "problemMatcher": []
+    }
+  ]
+}
