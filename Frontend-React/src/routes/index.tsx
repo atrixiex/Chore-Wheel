@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { LoginForm } from '../components/LoginForm'
+// import { LoginForm } from '../components/LoginForm'
 import Index from '../pages/Home'
 
 export const Route = createFileRoute('/')({
@@ -7,9 +7,9 @@ export const Route = createFileRoute('/')({
 })
 
 function HomeComponent() {
-  const { auth } = Route.useRouteContext()
+  // const { auth } = Route.useRouteContext()
 
-  if (!auth.isAuthenticated) return <LoginForm />
+  // if (!auth.isAuthenticated) return <LoginForm />
 
   return <Index />
 

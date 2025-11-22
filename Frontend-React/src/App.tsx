@@ -18,14 +18,14 @@ declare module '@tanstack/react-router' {
 }
 
 function InnerApp() {
-  const auth = useAuth()
-  return <RouterProvider router={router} context={{ auth }} />
+  // const auth = useAuth()
+  return <RouterProvider router={router} />
 }
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <InnerApp />
-    </AuthProvider>
-  </StrictMode>
+    {/* <AuthProvider> */}
+    <InnerApp />
+    {/* </AuthProvider> */}
+  </StrictMode >
 )
