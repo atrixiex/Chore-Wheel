@@ -1,68 +1,106 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface User {
   id: string
-  username: string
   email: string
 }
 
-interface AuthState {
+export interface AuthState {
   isAuthenticated: boolean
   user: User | null
-  login: (username: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
   logout: () => void
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+// API functions
+async function loginUser(email: string, password: string): Promise<{
+  user: User
+  token: string
+  refreshToken: string
+}> {
+  const response = await fetch('http://localhost:5082/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
 
-  useEffect(() => {
-    const token = localStorage.getItem('auth-token')
-    if (token) {
-      setIsLoading(false)
-    } else {
-      setIsLoading(false)
-    }
-  }, [])
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
-      </div>
-    )
+  if (!response.ok) {
+    throw new Error('Authentication failed')
   }
 
-  const login = async (username: string, password: string) => {
+  return response.json()
+}
 
-    const response = await fetch('/api/login', {
+async function refreshAccessToken(): Promise<boolean> {
+  const refreshToken = localStorage.getItem('refresh-token')
+  if (!refreshToken) return false
+
+  try {
+    const response = await fetch('/api/refresh', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ refreshToken }),
     })
 
-    if (response.ok) {
-      const userData = await response.json()
-      setUser(userData)
-      setIsAuthenticated(true)
-      localStorage.setItem('auth-token', userData.token)
-    } else {
-      throw new Error('Authentication failed')
+    if (!response.ok) {
+      localStorage.removeItem('auth-token')
+      localStorage.removeItem('refresh-token')
+      return false
     }
+
+    const data = await response.json()
+    localStorage.setItem('auth-token', data.token)
+
+    if (data.refreshToken) {
+      localStorage.setItem('refresh-token', data.refreshToken)
+    }
+
+    return true
+  } catch (error) {
+    console.error('Token refresh failed:', error)
+    return false
+  }
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient()
+
+  const loginMutation = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      loginUser(email, password),
+    onSuccess: (data) => {
+      localStorage.setItem('auth-token', data.token)
+      localStorage.setItem('refresh-token', data.refreshToken)
+      queryClient.setQueryData(['currentUser'], data.user)
+    },
+  })
+
+  const login = async (email: string, password: string) => {
+    await loginMutation.mutateAsync({ email, password })
   }
 
   const logout = () => {
-    setUser(null)
-    setIsAuthenticated(false)
     localStorage.removeItem('auth-token')
+    localStorage.removeItem('refresh-token')
+    queryClient.setQueryData(['currentUser'], null)
+    queryClient.clear()
   }
 
+  const token = localStorage.getItem('auth-token')
+  const user = queryClient.getQueryData<User>(['currentUser'])
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: !!token && !!user,
+        user: user ?? null,
+        login,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
@@ -75,3 +113,5 @@ export function useAuth() {
   }
   return context
 }
+
+export { refreshAccessToken }

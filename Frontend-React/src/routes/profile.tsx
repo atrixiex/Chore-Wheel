@@ -3,15 +3,10 @@ import UserProfile from '../components/UserProfile'
 
 
 export const Route = createFileRoute('/profile')({
-  // beforeLoad: ({ context }) => {
-  //   if (!context.auth.isAuthenticated) {
-  //     throw redirect({ to: '/' })
-  //   }
-  // },
-  // component: UserProfile,
-  component: RouteComponent
+  beforeLoad: ({ context }) => {
+    if (!context.auth.isAuthenticated) {
+      throw redirect({ to: '/' })
+    }
+  },
+  component: UserProfile,
 })
-
-function RouteComponent() {
-  return <UserProfile></UserProfile>
-}

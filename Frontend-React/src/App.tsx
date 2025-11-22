@@ -13,6 +13,7 @@ export const router = createRouter({
   routeTree,
   context: {
     queryClient,
+    auth: undefined!,
   },
 })
 
@@ -24,13 +25,17 @@ declare module '@tanstack/react-router' {
 }
 
 function InnerApp() {
-  // const auth = useAuth()
-  return <RouterProvider router={router} />
+  const auth = useAuth()
+  return <RouterProvider router={router} context={{ queryClient, auth }} />
 }
+
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <InnerApp />
+      </AuthProvider>
     </QueryClientProvider>
   </StrictMode>
 )

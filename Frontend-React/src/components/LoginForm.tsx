@@ -3,7 +3,7 @@ import { useAuth } from '../auth'
 import StyledInput from './StyledInput'
 
 export function LoginForm() {
-  const auth = useAuth()
+  const { login } = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -15,7 +15,7 @@ export function LoginForm() {
     setError('')
 
     try {
-      await auth.login(username, password)
+      await login(username, password)
     } catch (err) {
       setError('Invalid username or password')
     } finally {
@@ -39,7 +39,7 @@ export function LoginForm() {
 
 
         <StyledInput
-          id="username"
+          id="email"
           label='Username'
           type="text"
           value={username}
