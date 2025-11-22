@@ -1,6 +1,7 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import Header from '../components/Header'
+import type { QueryClient } from '@tanstack/react-query';
 
 interface AuthState {
   // isAuthenticated: boolean
@@ -9,9 +10,14 @@ interface AuthState {
   logout: () => void
 }
 
+// interface MyRouterContext {
+//   auth: AuthState
+// }
+
 interface MyRouterContext {
-  auth: AuthState
+  queryClient: QueryClient
 }
+
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootComponent,
