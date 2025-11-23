@@ -1,10 +1,15 @@
 import type { ComponentProps } from 'react'
 import { tv, type VariantProps } from 'tailwind-variants'
 
-export default function Button({ color, size, className, ...props }: ButtonVariants) {
+export default function Button({ color, size, full = false, className, ...props }: ButtonVariants) {
   return (
     <button
-      className={buttonStyles({ color, size, className })}
+      className={buttonStyles({
+        color,
+        size,
+        className,
+        full
+      })}
       {...props}
     >
       {props.children}
@@ -14,7 +19,7 @@ export default function Button({ color, size, className, ...props }: ButtonVaria
 
 
 const buttonStyles = tv({
-  base: 'w-full rounded-md transition-colors text-white',
+  base: 'rounded-md transition-colors text-white',
   variants: {
     color: {
       primary: 'bg-teal-600 hover:bg-teal-800',
@@ -25,11 +30,16 @@ const buttonStyles = tv({
       sm: 'text-sm py-2 px-4',
       md: 'text-xl py-2 px-4',
       lg: 'px-4 py-3 text-3xl'
+    },
+    full: {
+      true: 'w-full'
     }
+
   },
   defaultVariants: {
     size: 'md',
-    color: 'primary'
+    color: 'primary',
+    full: false,
   }
 })
 
