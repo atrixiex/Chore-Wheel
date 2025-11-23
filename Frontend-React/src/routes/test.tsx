@@ -1,5 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ChoreCard, { type CardData, type CardProps } from '../components/ChoreCard'
+import ChoreCard, { type CardData } from '../components/ChoreCard'
+import Button from '../components/Button'
+import { useState } from 'react'
+import Modal from '../components/Modal'
 
 export const Route = createFileRoute('/test')({
   component: RouteComponent,
@@ -25,10 +28,24 @@ const cardTestData: CardData[] = [{
 
 
 function RouteComponent() {
+
+  const [showModal, setShowModal] = useState(false);
+
+
+
+
+
+
   return <div>Hello "/test"!
 
     {cardTestData.map(data => <ChoreCard data={data} key={data.title}></ChoreCard>)}
 
+
+    <Button
+      onClick={() => setShowModal(true)}
+      color='primary' size='md'>Modal</Button>
+
+    <Modal isOpen={showModal} onClose={() => setShowModal(false)} title='hello'>Text</Modal>
   </div>
 }
 

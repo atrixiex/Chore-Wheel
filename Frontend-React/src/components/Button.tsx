@@ -1,9 +1,12 @@
 import type { ComponentProps } from 'react'
 import { tv, type VariantProps } from 'tailwind-variants'
 
-export default function Button(props: ButtonVariants) {
+export default function Button({ color, size, className, ...props }: ButtonVariants) {
   return (
-    <button className={buttonStyles(props)}>
+    <button
+      className={buttonStyles({ color, size, className })}
+      {...props}
+    >
       {props.children}
     </button>
   )
@@ -22,11 +25,11 @@ const buttonStyles = tv({
       sm: 'text-sm py-2 px-4',
       md: 'text-xl py-2 px-4',
       lg: 'px-4 py-3 text-3xl'
-    },
-    defaultVariants: {
-      size: 'md',
-      color: 'primary'
     }
+  },
+  defaultVariants: {
+    size: 'md',
+    color: 'primary'
   }
 })
 
